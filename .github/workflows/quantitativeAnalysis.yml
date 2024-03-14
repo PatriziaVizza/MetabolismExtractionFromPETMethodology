@@ -1,0 +1,106 @@
+name: Quantitative analysis methodology
+on: push
+run-name: Start the methodology to perform quantitative analysis of PET images
+jobs:
+  firstJob: 
+    #J1
+    runs-on: windows-latest
+    name: Image acquisition
+    outputs:
+      # PET and CT images are needed in DICOM format
+      images: ${{ steps.step1J1.outputs.images }}
+   
+    steps:
+      - id: step1J1
+        name: PET and CT image acquisition
+        run: |
+          echo "images='The acquired PET and CT images in DICOM format'" >> $GITHUB_OUTPUT
+  
+  secondJob:
+    #J2
+    runs-on: windows-latest
+    name: VOI definition
+    if: ${{ always() }}
+    needs: firstJob
+    outputs:
+      # The extracted VOIs 
+      VOI: ${{ steps.step2J2.outputs.VOI }}
+    
+    steps:
+      - id: step1J2 
+        name: PET and CT images fusion
+        # this step needs the PET and CT images acquired in the previous job
+        env:
+          inputJ2Images: ${{ needs.firstJob.outputs.images }}
+          mergedImage: ${{ steps.step1J2.outputs.mergedImage}}
+        run: |
+          echo "Starting from the acquired images $inputJ2Images, the output of this step is the fused image from CT and PET images $mergedImage" >> $GITHUB_OUTPUT 
+        
+      - id: step2J2
+        name: Semi-automatic vessel structure VOI segmentation
+        env:
+          MERGEDIMAGE: ${{ needs.steps.step1J2.outputs.mergedImage}}
+        run: |
+          echo "The VOI is estracted on $MERGEDIMAGE"
+          echo "VOI='The segmented volume-of-interest'" >> $GITHUB_OUTPUT
+ 
+  thirdJob:
+    #J3
+    runs-on: windows-latest
+    name: Quantitative analysis
+    if: ${{ always() }}
+    needs: [firstJob, secondJob]
+    outputs:
+      # The extracted VOIs 
+      modelingResult: ${{ steps.step4J3.outputs.modelingResult }}
+    
+    steps:
+      - id: step1J3
+        name: Preprocessing
+        # this step needs the VOIs extracted in the previous job
+        env:
+          inputJ3Images: ${{ needs.secondJob.outputs.VOI }}
+        run: |
+          echo "preprocessedImage='Preprocessed image'" >> GITHUB_OUTPUT
+
+      - id: step2J3
+        name: Image calibration
+        env:
+          preprocessedImage: ${{ needs.steps.step1J3.ouputs.preprocessedImage}}
+        run: |
+          echo "This step needs the pre-processed image $preprocessedImage"
+          echo "calibratedImage='Calibrated image'" >> GITHUB_OUTPUT
+
+      - id: step3J3
+        name: Segmentation and VOI extraction
+        env:
+          calibratedImage: ${{ needs.steps.step2J3.outputs.calibratedImage}}
+        run: |
+          echo "This step need the calibrated image $calibratedImage"
+          echo "segVOIextracted='The VOIs extracted for the considered districts'" $GITHUB_OUTPUT
+
+      - id: step4J3
+        name: Kineti model
+        env:
+          segVOIextracted: ${{ needs.steps.step3J4.output.segVOIextracted}}
+        run: |
+          echo "This step need the VOIs previous segmented and extracted from the districts of interest"
+          echo "modelingResult='The results of the kinetic model applied on the extracted VOIs'" $GITHUB_OUTPUT  
+        
+  fourthJob:
+    runs-on: windows-latest
+    name: Result evaluation
+    if: ${{ always() }}
+    needs: [firstJob, secondJob, thirdJob]
+    outputs:
+      # The extracted VOIs 
+      MRGluValue: ${{ steps.step1J4.outputs.MRGluValue }}
+
+    steps:
+      - id: step1J4
+        name: Comparison and evaluation of MRGlu values
+        env:
+          inputJ4Images: ${{ needs.thirdJob.outputs.modelingResult }}
+        run: |
+          echo "Starting from the results $inputJ4Images, the evaluation and the comparison between the MRGlu values extracted in the district of interest can be performed"
+          echo "statisticalResults='Statistical results is calculated and discussed'" >> $GITHUB_OUTPUT
