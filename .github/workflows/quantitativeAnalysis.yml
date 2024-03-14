@@ -14,7 +14,7 @@ jobs:
       - id: step1J1
         name: PET and CT image acquisition
         run: |
-          echo "images='The acquired PET and CT images in DICOM format'" >> $GITHUB_OUTPUT
+          echo "images='The acquired PET and CT images in DICOM format'" 
   
   secondJob:
     #J2
@@ -42,7 +42,7 @@ jobs:
           MERGEDIMAGE: ${{ needs.steps.step1J2.outputs.mergedImage}}
         run: |
           echo "The VOI is estracted on $MERGEDIMAGE"
-          echo "VOI='The segmented volume-of-interest'" >> $GITHUB_OUTPUT
+          echo "VOI='The segmented volume-of-interest'" 
  
   thirdJob:
     #J3
@@ -61,7 +61,7 @@ jobs:
         env:
           inputJ3Images: ${{ needs.secondJob.outputs.VOI }}
         run: |
-          echo "preprocessedImage='Preprocessed image'" >> GITHUB_OUTPUT
+          echo "preprocessedImage='Preprocessed image'" 
 
       - id: step2J3
         name: Image calibration
@@ -69,7 +69,7 @@ jobs:
           preprocessedImage: ${{ needs.steps.step1J3.ouputs.preprocessedImage}}
         run: |
           echo "This step needs the pre-processed image $preprocessedImage"
-          echo "calibratedImage='Calibrated image'" >> GITHUB_OUTPUT
+          echo "calibratedImage='Calibrated image'" 
 
       - id: step3J3
         name: Segmentation and VOI extraction
@@ -77,7 +77,7 @@ jobs:
           calibratedImage: ${{ needs.steps.step2J3.outputs.calibratedImage}}
         run: |
           echo "This step need the calibrated image $calibratedImage"
-          echo "segVOIextracted='The VOIs extracted for the considered districts'" $GITHUB_OUTPUT
+          echo "segVOIextracted='The VOIs extracted for the considered districts'" 
 
       - id: step4J3
         name: Kineti model
@@ -85,7 +85,7 @@ jobs:
           segVOIextracted: ${{ needs.steps.step3J4.output.segVOIextracted}}
         run: |
           echo "This step need the VOIs previous segmented and extracted from the districts of interest"
-          echo "modelingResult='The results of the kinetic model applied on the extracted VOIs'" $GITHUB_OUTPUT  
+          echo "modelingResult='The results of the kinetic model applied on the extracted VOIs'" 
         
   fourthJob:
     runs-on: windows-latest
