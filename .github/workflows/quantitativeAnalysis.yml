@@ -34,7 +34,7 @@ jobs:
           inputJ2Images: ${{ needs.firstJob.outputs.images }}
           mergedImage: ${{ steps.step1J2.outputs.mergedImage}}
         run: |
-          echo "Starting from the acquired images $inputJ2Images, the output of this step is the fused image from CT and PET images $mergedImage" >> $GITHUB_OUTPUT 
+          echo "Starting from the acquired images $inputJ2Images, the output of this step is the fused image from CT and PET images $mergedImage"
         
       - id: step2J2
         name: Semi-automatic vessel structure VOI segmentation
