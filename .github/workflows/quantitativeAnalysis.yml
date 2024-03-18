@@ -80,12 +80,12 @@ jobs:
           echo "segVOIextracted='The VOIs extracted for the considered districts'" 
 
       - id: step4J3
-        name: Kineti model
+        name: MRGlu measurement
         env:
           segVOIextracted: ${{ needs.steps.step3J4.output.segVOIextracted}}
         run: |
           echo "This step need the VOIs previous segmented and extracted from the districts of interest"
-          echo "modelingResult='The results of the kinetic model applied on the extracted VOIs'" 
+          echo "modelingResult='The results of the compartmental model applied on the extracted VOIs'" 
         
   fourthJob:
     runs-on: windows-latest
