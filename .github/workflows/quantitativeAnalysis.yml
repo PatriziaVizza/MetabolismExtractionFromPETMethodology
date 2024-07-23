@@ -1,4 +1,4 @@
-name: Quantitative analysis methodology
+name: Methodology for glucose metabolism extraction in Cardiac PET quantitative analysis
 on: push
 run-name: Start the methodology to perform quantitative analysis of PET images
 jobs:
